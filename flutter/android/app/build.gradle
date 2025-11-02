@@ -1,17 +1,10 @@
 import com.google.protobuf.gradle.*
-import groovy.json.JsonSlurper
 
 plugins {
     id "com.google.protobuf" version "0.9.4"
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
-}
-
-def keystoreProperties = new Properties()
-def keystorePropertiesFile = rootProject.file('key.properties')
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
 def localProperties = new Properties()
@@ -32,37 +25,8 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-// Add rustls-platform-verifier Android support
-String findRustlsPlatformVerifierMavenDir() {
-    def dependencyText = providers.exec {
-        it.workingDir = new File("../..")
-        commandLine("cargo", "metadata", "--format-version", "1")
-    }.standardOutput.asText.get()
-
-    def dependencyJson = new JsonSlurper().parseText(dependencyText)
-    def pkg = dependencyJson.packages.find { it.name == "rustls-platform-verifier-android" }
-    
-    if (pkg == null) {
-        throw new GradleException("rustls-platform-verifier-android package not found in cargo metadata!")
-    }
-    
-    def manifestPath = file(pkg.manifest_path)
-    def mavenDir = new File(manifestPath.parentFile, "maven")
-    
-    if (!mavenDir.exists()) {
-        throw new GradleException("Maven directory not found at: ${mavenDir.path}")
-    }
-    
-    println("✓ Found rustls-platform-verifier maven repo at: ${mavenDir.path}")
-    return mavenDir.path
-}
-
-
-repositories {
-    maven {
-        url = findRustlsPlatformVerifierMavenDir()
-        metadataSources.artifact()
-    }
+dependencies {
+    implementation 'com.google.protobuf:protobuf-javalite:3.20.1'
 }
 
 protobuf {
@@ -82,6 +46,7 @@ protobuf {
 }
 
 android {
+    namespace "com.carriez.flutter_hbb"
     compileSdkVersion 34
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -91,32 +56,34 @@ android {
     }
 
     compileOptions {
-        targetCompatibility JavaVersion.VERSION_1_8
-        sourceCompatibility JavaVersion.VERSION_1_8
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.carriez.flutter_hbb"
-        minSdkVersion 22
+        minSdkVersion 21
         targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
 
     signingConfigs {
-      release {
-        keyAlias keystoreProperties['keyAlias']
-        keyPassword keystoreProperties['keyPassword']
-        storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-        storePassword keystoreProperties['storePassword']
-      }
+        release {
+            keyAlias System.getenv("RUSTDESK_ANDROID_KEY_ALIAS")
+            keyPassword System.getenv("RUSTDESK_ANDROID_KEY_PASSWORD")
+            storeFile file(System.getenv("RUSTDESK_ANDROID_KEY_PATH"))
+            storePassword System.getenv("RUSTDESK_ANDROID_STORE_PASSWORD")
+        }
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules'
         }
@@ -128,10 +95,9 @@ flutter {
 }
 
 dependencies {
-    implementation 'com.google.protobuf:protobuf-javalite:3.20.1'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.2.0'
     implementation "androidx.media:media:1.6.0"
     implementation 'com.github.getActivity:XXPermissions:18.5'
     implementation("org.jetbrains.kotlin:kotlin-stdlib") { version { strictly("1.9.10") } }
     implementation 'com.caverock:androidsvg-aar:1.4'
-    implementation "rustls:rustls-platform-verifier:0.1.1"
 }
