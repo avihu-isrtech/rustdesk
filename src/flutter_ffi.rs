@@ -2170,6 +2170,10 @@ pub fn is_disable_settings() -> SyncReturn<bool> {
     SyncReturn(config::is_disable_settings())
 }
 
+pub fn is_disable_chat_screen() -> SyncReturn<bool> {
+    SyncReturn(config::is_disable_chat_screen())
+}
+
 pub fn is_disable_ab() -> SyncReturn<bool> {
     SyncReturn(config::is_disable_ab())
 }

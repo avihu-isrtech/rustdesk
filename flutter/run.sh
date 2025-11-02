@@ -9,5 +9,6 @@ cargo build --features flutter
 echo "-----------------------------------------------------------------------------------------------------------------"
 echo "------------------------------------------------ Running Flutter ------------------------------------------------"
 echo "-----------------------------------------------------------------------------------------------------------------"
+#flutter run --start-paused --disable-service-auth-codes --host-vmservice-port 64869 "${DEVICE_ARGS[@]}" "$@"
 flutter run --disable-service-auth-codes --host-vmservice-port 64869 "${DEVICE_ARGS[@]}" "$@"
 # Debug URL: http://127.0.0.1:64869/

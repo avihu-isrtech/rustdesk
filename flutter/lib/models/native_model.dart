@@ -212,9 +212,11 @@ class PlatformFFI {
       await _ffiBind.mainDeviceId(id: id);
       await _ffiBind.mainDeviceName(name: name);
       await _ffiBind.mainSetHomeDir(home: _homeDir);
+      String customConfig = '';
+      customConfig = (await rootBundle.loadString('assets/custom_client_config.json.b64')).trim();
       await _ffiBind.mainInit(
         appDir: _dir,
-        customClientConfig: '',
+        customClientConfig: customConfig,
       );
     } catch (e) {
       debugPrintStack(label: 'initialize failed: $e');
