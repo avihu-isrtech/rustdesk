@@ -217,8 +217,30 @@ class FloatingWindowService : Service(), View.OnTouchListener {
             }
         }
         // position
-        lastLayoutX = 0
-        lastLayoutY = (wh.second - viewHeight) / 2
+        FFI.getLocalOption("floating-window-initial-x").let {
+            if (it.isNotEmpty()) {
+                try {
+                    lastLayoutX = it.toInt()
+                    return
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+            lastLayoutX = 0
+        }
+
+        FFI.getLocalOption("floating-window-initial-y").let {
+            if (it.isNotEmpty()) {
+                try {
+                    lastLayoutY = it.toInt()
+                    return
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+            lastLayoutY = (wh.second - viewHeight) / 2
+        }
+
         lastOrientation = resources.configuration.orientation
     }
 
