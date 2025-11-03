@@ -633,14 +633,23 @@ class PermissionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var disallow = bind.mainGetBuildinOption(key: kOptionDisallowTurningOffGivenPermissions) == 'Y';
+
+    void handleChange(bool value) {
+      if (disallow && isOk) {
+        return;
+      } else {
+        onPressed();
+      }
+    }
+
     return SwitchListTile(
         visualDensity: VisualDensity.compact,
         contentPadding: EdgeInsets.all(0),
         title: Text(name),
         value: isOk,
-        onChanged: (bool value) {
-          onPressed();
-        });
+        onChanged: handleChange
+    );
   }
 }
 
