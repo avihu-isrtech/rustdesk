@@ -29,7 +29,7 @@ class SettingsPage extends StatefulWidget implements PageShape {
   final icon = Icon(Icons.settings);
 
   @override
-  final appBarActions = bind.isDisableSettings() ? [] : [ScanButton()];
+  final appBarActions = bind.isDisableSettings() || bind.mainGetBuildinOption(key: kOptionHideQrCodeScannerInSettingsPage) == 'Y' ? [] : [ScanButton()];
 
   @override
   State<SettingsPage> createState() => _SettingsState();
@@ -639,6 +639,8 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
     final disabledSettings = bind.isDisableSettings();
     final hideSecuritySettings =
         bind.mainGetBuildinOption(key: kOptionHideSecuritySetting) == 'Y';
+    final hide2FASettings =
+        bind.mainGetBuildinOption(key: kOptionHide2faSetting) == 'Y';
     final settings = SettingsList(
       sections: [
         customClientSection,
@@ -808,7 +810,8 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
         if (isAndroid &&
             !disabledSettings &&
             !outgoingOnly &&
-            !hideSecuritySettings)
+            !hideSecuritySettings &&
+            !hide2FASettings)
           SettingsSection(title: Text('2FA'), tiles: tfaTiles),
         if (isAndroid &&
             !disabledSettings &&

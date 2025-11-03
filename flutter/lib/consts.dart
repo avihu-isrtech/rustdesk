@@ -169,6 +169,9 @@ const String kOptionHideProxySetting = "hide-proxy-settings";
 const String kOptionHideWebSocketSetting = "hide-websocket-settings";
 const String kOptionHideRemotePrinterSetting = "hide-remote-printer-settings";
 const String kOptionHideSecuritySetting = "hide-security-settings";
+const String kOptionHideAppBarActionsInServerPage = "hide-app-bar-actions-in-server-page";
+const String kOptionHideQrCodeScannerInSettingsPage = "hide-qr-code-scanner-in-settings-page";
+const String kOptionHide2faSetting = "hide-2fa-settings";
 const String kOptionHideNetworkSetting = "hide-network-settings";
 const String kOptionRemovePresetPasswordWarning =
     "remove-preset-password-warning";

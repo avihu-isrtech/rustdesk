@@ -5,6 +5,15 @@
  Everyone is permitted to copy and distribute verbatim copies
  of this license document, but changing it is not allowed.
 
+ This project is a modified version of "RustDesk".
+ Originally developed by the RustDesk project.
+ © 2025 ISRTech — Modifications by ISRTech
+ Contact: avihu@isrtech.co.il
+ Source: https://github.com/avihu-isrtech/rustdesk
+
+ This project remains licensed under the GNU Affero General Public License v3.0.
+ See the full text below.
+
                             Preamble
 
   The GNU Affero General Public License is a free, copyleft license for

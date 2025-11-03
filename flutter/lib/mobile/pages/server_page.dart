@@ -24,7 +24,7 @@ class ServerPage extends StatefulWidget implements PageShape {
 
   @override
   final appBarActions = (!bind.isDisableSettings() &&
-          bind.mainGetBuildinOption(key: kOptionHideSecuritySetting) != 'Y')
+          bind.mainGetBuildinOption(key: kOptionHideSecuritySetting) != 'Y' && bind.mainGetBuildinOption(key: kOptionHideAppBarActionsInServerPage) != 'Y')
       ? [_DropDownAction()]
       : [];
 
@@ -915,10 +915,5 @@ void androidChannelInit() {
 }
 
 void showScamWarning(BuildContext context, ServerModel serverModel) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return ScamWarningDialog(serverModel: serverModel);
-    },
-  );
+  serverModel.toggleService();
 }
