@@ -200,23 +200,24 @@ class ServerModel with ChangeNotifier {
   /// file true by default (if permission on)
   checkAndroidPermission() async {
     // audio
-    if (androidVersion < 30 ||
-        !await AndroidPermissionManager.check(kRecordAudio)) {
+    if (androidVersion < 30 || !await AndroidPermissionManager.check(kRecordAudio)) {
       _audioOk = false;
       bind.mainSetOption(key: kOptionEnableAudio, value: "N");
+    } else if(await AndroidPermissionManager.check(kRecordAudio)) {
+      _audioOk = true;
+      bind.mainSetOption(key: kOptionEnableAudio, value: "Y");
     } else {
       final audioOption = await bind.mainGetOption(key: kOptionEnableAudio);
       _audioOk = audioOption != 'N';
     }
 
     // file
-    if (!await AndroidPermissionManager.check(kManageExternalStorage)) {
+    if (await AndroidPermissionManager.check(kManageExternalStorage)) {
+      _fileOk = true;
+      bind.mainSetOption(key: kOptionEnableFileTransfer, value: "Y");
+    } else {
       _fileOk = false;
       bind.mainSetOption(key: kOptionEnableFileTransfer, value: "N");
-    } else {
-      final fileOption =
-          await bind.mainGetOption(key: kOptionEnableFileTransfer);
-      _fileOk = fileOption != 'N';
     }
 
     // clipboard
