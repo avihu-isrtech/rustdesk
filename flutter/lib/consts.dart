@@ -172,6 +172,7 @@ const String kOptionHideSecuritySetting = "hide-security-settings";
 const String kOptionHideAppBarActionsInServerPage = "hide-app-bar-actions-in-server-page";
 const String kOptionHideQrCodeScannerInSettingsPage = "hide-qr-code-scanner-in-settings-page";
 const String kOptionDisallowTurningOffGivenPermissions = "disallow-turning-off-given-permissions";
+const String kOptionShowStartOnBootOption = "show-start-on-boot-option";
 const String kOptionHide2faSetting = "hide-2fa-settings";
 const String kOptionHideNetworkSetting = "hide-network-settings";
 const String kOptionRemovePresetPasswordWarning =

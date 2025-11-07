@@ -537,38 +537,41 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                 }
               }));
     }
-    enhancementsTiles.add(SettingsTile.switchTile(
-        initialValue: _enableStartOnBoot,
-        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(translate('Start on boot')),
-          Text(
-              '* ${translate('Start the screen sharing service on boot, requires special permissions')}',
-              style: Theme.of(context).textTheme.bodySmall),
-        ]),
-        onToggle: (toValue) async {
-          if (toValue) {
-            // 1. request kIgnoreBatteryOptimizations
-            if (!await AndroidPermissionManager.check(
-                kRequestIgnoreBatteryOptimizations)) {
-              if (!await AndroidPermissionManager.request(
+    var showStartOnBootOption = bind.mainGetBuildinOption(key: kOptionShowStartOnBootOption) == 'settings_page';
+    if(showStartOnBootOption) {
+      enhancementsTiles.add(SettingsTile.switchTile(
+          initialValue: _enableStartOnBoot,
+          title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(translate('Start on boot')),
+            Text(
+                '* ${translate('Start the screen sharing service on boot, requires special permissions')}',
+                style: Theme.of(context).textTheme.bodySmall),
+          ]),
+          onToggle: (toValue) async {
+            if (toValue) {
+              // 1. request kIgnoreBatteryOptimizations
+              if (!await AndroidPermissionManager.check(
                   kRequestIgnoreBatteryOptimizations)) {
-                return;
+                if (!await AndroidPermissionManager.request(
+                    kRequestIgnoreBatteryOptimizations)) {
+                  return;
+                }
               }
-            }
 
-            // 2. request kSystemAlertWindow
-            if (!await AndroidPermissionManager.check(kSystemAlertWindow)) {
-              if (!await AndroidPermissionManager.request(kSystemAlertWindow)) {
-                return;
+              // 2. request kSystemAlertWindow
+              if (!await AndroidPermissionManager.check(kSystemAlertWindow)) {
+                if (!await AndroidPermissionManager.request(kSystemAlertWindow)) {
+                  return;
+                }
               }
+
+              // (Optional) 3. request input permission
             }
+            setState(() => _enableStartOnBoot = toValue);
 
-            // (Optional) 3. request input permission
-          }
-          setState(() => _enableStartOnBoot = toValue);
-
-          gFFI.invokeMethod(AndroidChannel.kSetStartOnBootOpt, toValue);
-        }));
+            gFFI.invokeMethod(AndroidChannel.kSetStartOnBootOpt, toValue);
+          }));
+    }
 
     if (!bind.isCustomClient()) {
       enhancementsTiles.add(

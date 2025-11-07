@@ -31,6 +31,7 @@ class ServerModel with ChangeNotifier {
   bool _audioOk = false;
   bool _fileOk = false;
   bool _clipboardOk = false;
+  bool _startOnBootOk = false;
   bool _showElevation = false;
   bool hideCm = false;
   int _connectStatus = 0; // Rendezvous Server status
@@ -62,6 +63,8 @@ class ServerModel with ChangeNotifier {
   bool get fileOk => _fileOk;
 
   bool get clipboardOk => _clipboardOk;
+
+  bool get startOnBootOk => _startOnBootOk;
 
   bool get showElevation => _showElevation;
 
@@ -224,6 +227,9 @@ class ServerModel with ChangeNotifier {
     final clipOption = await bind.mainGetOption(key: kOptionEnableClipboard);
     _clipboardOk = clipOption != 'N';
 
+    // start on boot
+    initStartOnBoot();
+
     notifyListeners();
   }
 
@@ -342,6 +348,69 @@ class ServerModel with ChangeNotifier {
         key: kOptionEnableClipboard,
         value: clipboardOk ? defaultOptionYes : 'N');
     notifyListeners();
+  }
+
+  toggleStartOnBoot() async {
+    var shouldAllowStartOnBoot = !startOnBootOk;
+
+    if (shouldAllowStartOnBoot) {
+      var enabledStartOnBoot = await gFFI.invokeMethod(AndroidChannel.kGetStartOnBootOpt);
+      if (enabledStartOnBoot) {
+        _startOnBootOk = shouldAllowStartOnBoot;
+        notifyListeners();
+        return;
+      }
+
+      if (!await AndroidPermissionManager.check(kRequestIgnoreBatteryOptimizations)) {
+        if (!await AndroidPermissionManager.request(kRequestIgnoreBatteryOptimizations)) {
+          return;
+        }
+      }
+
+      if (!await AndroidPermissionManager.check(kSystemAlertWindow)) {
+        if (!await AndroidPermissionManager.request(kSystemAlertWindow)) {
+          return;
+        }
+      }
+
+      gFFI.invokeMethod(AndroidChannel.kSetStartOnBootOpt, shouldAllowStartOnBoot);
+      _startOnBootOk = shouldAllowStartOnBoot;
+      notifyListeners();
+    } else {
+      var enabledStartOnBoot = await gFFI.invokeMethod(AndroidChannel.kGetStartOnBootOpt);
+      if (!enabledStartOnBoot) {
+        _startOnBootOk = shouldAllowStartOnBoot;
+        notifyListeners();
+        return;
+      }
+
+      gFFI.invokeMethod(AndroidChannel.kSetStartOnBootOpt, shouldAllowStartOnBoot);
+      _startOnBootOk = shouldAllowStartOnBoot;
+      notifyListeners();
+    }
+  }
+
+  initStartOnBoot() async {
+    var enabledStartOnBoot = await gFFI.invokeMethod(AndroidChannel.kGetStartOnBootOpt);
+    if(enabledStartOnBoot) {
+      _startOnBootOk = true;
+      return;
+    }
+
+    var batteryOptimizationValid = await AndroidPermissionManager.check(kRequestIgnoreBatteryOptimizations);
+    if (!batteryOptimizationValid) {
+      _startOnBootOk = false;
+      return;
+    }
+
+    var systemAlertWindowValid = await AndroidPermissionManager.check(kSystemAlertWindow);
+    if (!systemAlertWindowValid) {
+      _startOnBootOk = false;
+      return;
+    }
+
+    gFFI.invokeMethod(AndroidChannel.kSetStartOnBootOpt, true);
+    _startOnBootOk = true;
   }
 
   toggleInput() async {
