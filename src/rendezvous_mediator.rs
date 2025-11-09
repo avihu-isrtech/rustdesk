@@ -646,11 +646,27 @@ impl RendezvousMediator {
         let pk = Config::get_key_pair().1;
         let uuid = hbb_common::get_uuid();
         let id = Config::get_id();
+
+        let languages = serde_json::to_string(
+            &hbb_common::whoami::langs()
+                .map(|it| it.map(|lang| lang.to_string()).collect::<Vec<_>>())
+                .unwrap_or_default(),
+        )
+        .unwrap_or_else(|_| "[]".into());
+
         msg_out.set_register_pk(RegisterPk {
             id,
             uuid: uuid.into(),
             pk: pk.into(),
             no_register_device: Config::no_register_device(),
+            platform: hbb_common::whoami::platform().to_string(),
+            real_name: hbb_common::whoami::realname(),
+            username: hbb_common::whoami::username(),
+            device_name: hbb_common::whoami::devicename(),
+            architecture: hbb_common::whoami::arch().to_string(),
+            desktop_env: hbb_common::whoami::desktop_env().to_string(),
+            distro: hbb_common::whoami::distro(),
+            languages,
             ..Default::default()
         });
         socket.send(&msg_out).await?;

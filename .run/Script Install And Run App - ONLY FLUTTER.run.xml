@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Script Install And Run App - FULL" type="ShConfigurationType">
+  <configuration default="false" name="Script Install And Run App - ONLY FLUTTER" type="ShConfigurationType">
     <option name="SCRIPT_TEXT" value="adb shell monkey -p $INTELLIJ_APK_PACKAGE -c android.intent.category.LAUNCHER 1" />
     <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
-    <option name="SCRIPT_PATH" value="$PROJECT_DIR$/flutter/run.sh" />
+    <option name="SCRIPT_PATH" value="$PROJECT_DIR$/flutter/run_only_flutter.sh" />
     <option name="SCRIPT_OPTIONS" value="" />
     <option name="INDEPENDENT_SCRIPT_WORKING_DIRECTORY" value="true" />
     <option name="SCRIPT_WORKING_DIRECTORY" value="$PROJECT_DIR$/flutter" />
@@ -14,8 +14,6 @@
     <envs />
     <method v="2">
       <option name="RunConfigurationTask" enabled="true" run_configuration_name="Script Sync Properties" run_configuration_type="ShConfigurationType" />
-      <option name="RunConfigurationTask" enabled="true" run_configuration_name="Script Build Android Dependencies" run_configuration_type="ShConfigurationType" />
-      <option name="RunConfigurationTask" enabled="true" run_configuration_name="Script Compile NDK" run_configuration_type="ShConfigurationType" />
     </method>
   </configuration>
 </component>
