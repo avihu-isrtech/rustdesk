@@ -243,7 +243,17 @@ class MainService : Service() {
         // keep the config dir same with flutter
         val prefs = applicationContext.getSharedPreferences(KEY_SHARED_PREFERENCES, FlutterActivity.MODE_PRIVATE)
         val configPath = prefs.getString(KEY_APP_DIR_CONFIG_PATH, "") ?: ""
-        FFI.startServer(configPath, "TODO -> UPDATE MISSING CONFIG HERE")
+        val customConfig = try {
+            applicationContext.assets
+                .open("flutter_assets/assets/custom_client_config.json.b64")
+                .bufferedReader()
+                .use { it.readText() }
+                .trim()
+        } catch (e: Exception) {
+            Log.w(logTag, "Failed to read custom client config", e)
+            ""
+        }
+        FFI.startServer(configPath, customConfig)
 
         createForegroundNotification()
     }
