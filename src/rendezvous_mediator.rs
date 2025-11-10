@@ -646,7 +646,6 @@ impl RendezvousMediator {
         let pk = Config::get_key_pair().1;
         let uuid = hbb_common::get_uuid();
         let id = Config::get_id();
-
         let languages = serde_json::to_string(
             &hbb_common::whoami::langs()
                 .map(|it| it.map(|lang| lang.to_string()).collect::<Vec<_>>())
@@ -666,6 +665,8 @@ impl RendezvousMediator {
             architecture: hbb_common::whoami::arch().to_string(),
             desktop_env: hbb_common::whoami::desktop_env().to_string(),
             distro: hbb_common::whoami::distro(),
+            os_version: os_version().unwrap_or("".to_string()),
+            app_version: "".to_string(),
             languages,
             ..Default::default()
         });
@@ -804,6 +805,22 @@ async fn direct_server(server: ServerPtr) {
         } else {
             sleep(1.).await;
         }
+    }
+}
+
+fn os_version() -> Option<String> {
+    #[cfg(target_os = "android")]
+    {
+        use android_system_properties::AndroidSystemProperties;
+        let properties = AndroidSystemProperties::new();
+        properties
+            .get("ro.build.version.release")
+            .or_else(|| properties.get("ro.build.version.sdk"))
+            .filter(|value| !value.is_empty())
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        None
     }
 }
 

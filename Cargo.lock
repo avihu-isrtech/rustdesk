@@ -6533,6 +6533,7 @@ version = "1.4.3"
 dependencies = [
  "android-wakelock",
  "android_logger",
+ "android_system_properties",
  "arboard",
  "async-process",
  "async-trait",
