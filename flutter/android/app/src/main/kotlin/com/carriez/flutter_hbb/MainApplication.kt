@@ -2,6 +2,7 @@ package com.carriez.flutter_hbb
 
 import android.app.Application
 import android.util.Log
+import android.provider.Settings
 import ffi.FFI
 
 class MainApplication : Application() {
@@ -13,5 +14,9 @@ class MainApplication : Application() {
         super.onCreate()
         Log.d(TAG, "App start")
         FFI.onAppStart(applicationContext)
+        val androidId = Settings.Secure.getString(applicationContext.contentResolver, Settings.Secure.ANDROID_ID)
+        if (androidId != null) {
+            FFI.setAndroidId(androidId)
+        }
     }
 }
