@@ -14,3 +14,5 @@ adb shell am start -a android.settings.MANAGE_APP_ALL_FILES_ACCESS_PERMISSION -d
 adb shell pm grant $package android.permission.RECORD_AUDIO
 adb shell pm grant $package android.permission.FOREGROUND_SERVICE
 adb shell pm grant $package android.permission.FOREGROUND_SERVICE_MICROPHONE
+adb shell pm grant $package android.permission.CAMERA
+adb shell monkey -p $package -c android.intent.category.LAUNCHER 1

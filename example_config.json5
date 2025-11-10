@@ -11,10 +11,11 @@
     "key": "O7HxZReFltfqa2minq4ktbxmyCfFW4kyH5r1APTZAt8=" // the public key of the rendezvous server
   },
   "override-settings": {
-    "peer-id": "555555555", // a predefined peer id, can be empty string, null or removed if we want to auto generate
-    "auto-peer-id-mode": "uuid", // numeric/uuid
+    "peer-id": "555555555", // a predefined peer ID - can be an empty string, null or removed if we want to auto generate
+    "auto-peer-id-mode": "uuid", // numeric/uuid (default is numeric)
+    "fixed-uuid": "some_random_uuid_value", // this is the unique identifier of the device - to let the app pick its own device id leave it null, empty or remove it
     "floating-window-untouchable": "Y",
-    "floating-window-size": "32", // in pixels (its a square shape)
+    "floating-window-size": "32", // in pixels (its square shape)
     "floating-window-transparency": "1", // 0-10 (0 - invisible, 10 - fully visible)
     "floating-window-initial-x": "0",
     "floating-window-initial-y": "0",
