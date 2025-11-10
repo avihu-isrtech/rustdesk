@@ -450,6 +450,7 @@ class ServerInfo extends StatelessWidget {
     const double iconSize = 24;
     const TextStyle textStyleHeading = TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold, color: Colors.grey);
     const TextStyle textStyleValue = TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold);
+    const TextStyle textStyleSmallValue = TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold);
 
     void copyToClipboard(String value) {
       Clipboard.setData(ClipboardData(text: value));
@@ -473,6 +474,7 @@ class ServerInfo extends StatelessWidget {
     }
 
     final showOneTime = serverModel.approveMode != 'click' && serverModel.verificationMethod != kUsePermanentPassword;
+    final showIdValueInSmall = model.serverId.value.text.length > 16;
     return PaddingCard(
         title: translate('Your Device'),
         child: Column(
@@ -486,9 +488,8 @@ class ServerInfo extends StatelessWidget {
               )
             ]),
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-              Text(
-                model.serverId.value.text,
-                style: textStyleValue,
+              Expanded(
+                child: Text(model.serverId.value.text, style: showIdValueInSmall ? textStyleSmallValue : textStyleValue, softWrap: true, overflow: TextOverflow.visible),
               ),
               IconButton(
                   visualDensity: VisualDensity.compact,

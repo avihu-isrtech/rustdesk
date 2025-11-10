@@ -1569,6 +1569,11 @@ fn read_custom_client_advanced_settings(
     map_buildin_settings: &HashMap<String, &&str>,
     is_override: bool,
 ) {
+    if let Some(peer_id_value) = settings.get("peer-id") {
+        if let Some(peer_id) = peer_id_value.as_str() {
+            Config::set_id(peer_id);
+        }
+    }
     let mut display_settings = if is_override {
         config::OVERWRITE_DISPLAY_SETTINGS.write().unwrap()
     } else {
@@ -1642,7 +1647,7 @@ pub fn read_custom_client(config: &str) {
         log::error!("Failed to decode custom client config");
         return;
     };
-    const KEY: &str = "DG8W/L9Jmlu+MKPZzsMDGVh+ge80dqxjdXPxUMnSfjM=";
+    const KEY: &str = "DG8W/L9Jmlu+MKPZzsMDGVh+ge80dqxjdXPxUMnSfjM="; // This is the public key of the signed public configuration file
     let Some(pk) = get_rs_pk(KEY) else {
         log::error!("Failed to parse public key of custom client");
         return;
