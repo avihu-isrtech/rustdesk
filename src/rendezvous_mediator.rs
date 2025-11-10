@@ -665,8 +665,8 @@ impl RendezvousMediator {
             architecture: hbb_common::whoami::arch().to_string(),
             desktop_env: hbb_common::whoami::desktop_env().to_string(),
             distro: hbb_common::whoami::distro(),
-            os_version: os_version().unwrap_or("".to_string()),
-            app_version: "".to_string(),
+            os_version: os_version().unwrap_or_default(),
+            app_version: "1.4.3".to_string(), // TODO -> Update this from flutter
             languages,
             ..Default::default()
         });
