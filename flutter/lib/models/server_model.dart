@@ -43,8 +43,7 @@ class ServerModel with ChangeNotifier {
 
   late String _emptyIdShow;
   late final IDTextEditingController _serverId;
-  final _serverPasswd =
-      TextEditingController(text: translate("Generating ..."));
+  final _serverPasswd = TextEditingController(text: translate("Generating ..."));
 
   final tabController = DesktopTabController(tabType: DesktopTabType.cm);
 
@@ -71,11 +70,7 @@ class ServerModel with ChangeNotifier {
   int get connectStatus => _connectStatus;
 
   String get verificationMethod {
-    final index = [
-      kUseTemporaryPassword,
-      kUsePermanentPassword,
-      kUseBothPasswords
-    ].indexOf(_verificationMethod);
+    final index = [kUseTemporaryPassword, kUsePermanentPassword, kUseBothPasswords].indexOf(_verificationMethod);
     if (index < 0) {
       return kUseBothPasswords;
     }
@@ -117,9 +112,9 @@ class ServerModel with ChangeNotifier {
   }
 
   bool get allowNumericOneTimePassword => _allowNumericOneTimePassword;
+
   switchAllowNumericOneTimePassword() async {
-    await mainSetBoolOption(
-        kOptionAllowNumericOneTimePassword, !_allowNumericOneTimePassword);
+    await mainSetBoolOption(kOptionAllowNumericOneTimePassword, !_allowNumericOneTimePassword);
   }
 
   TextEditingController get serverId => _serverId;
@@ -150,8 +145,7 @@ class ServerModel with ChangeNotifier {
     */
 
     timerCallback() async {
-      final connectionStatus =
-          jsonDecode(await bind.mainGetConnectStatus()) as Map<String, dynamic>;
+      final connectionStatus = jsonDecode(await bind.mainGetConnectStatus()) as Map<String, dynamic>;
       final statusNum = connectionStatus['status_num'] as int;
       if (statusNum != _connectStatus) {
         _connectStatus = statusNum;
@@ -206,7 +200,7 @@ class ServerModel with ChangeNotifier {
     if (androidVersion < 30 || !await AndroidPermissionManager.check(kRecordAudio)) {
       _audioOk = false;
       bind.mainSetOption(key: kOptionEnableAudio, value: "N");
-    } else if(await AndroidPermissionManager.check(kRecordAudio)) {
+    } else if (await AndroidPermissionManager.check(kRecordAudio)) {
       _audioOk = true;
       bind.mainSetOption(key: kOptionEnableAudio, value: "Y");
     } else {
@@ -236,13 +230,10 @@ class ServerModel with ChangeNotifier {
   updatePasswordModel() async {
     var update = false;
     final temporaryPassword = await bind.mainGetTemporaryPassword();
-    final verificationMethod =
-        await bind.mainGetOption(key: kOptionVerificationMethod);
-    final temporaryPasswordLength =
-        await bind.mainGetOption(key: "temporary-password-length");
+    final verificationMethod = await bind.mainGetOption(key: kOptionVerificationMethod);
+    final temporaryPasswordLength = await bind.mainGetOption(key: "temporary-password-length");
     final approveMode = await bind.mainGetOption(key: kOptionApproveMode);
-    final numericOneTimePassword =
-        await mainGetBoolOption(kOptionAllowNumericOneTimePassword);
+    final numericOneTimePassword = await mainGetBoolOption(kOptionAllowNumericOneTimePassword);
     /*
     var hideCm = option2bool(
         'allow-hide-cm', await bind.mainGetOption(key: 'allow-hide-cm'));
@@ -257,13 +248,10 @@ class ServerModel with ChangeNotifier {
     }
     var stopped = await mainGetBoolOption(kOptionStopService);
     final oldPwdText = _serverPasswd.text;
-    if (stopped ||
-        verificationMethod == kUsePermanentPassword ||
-        _approveMode == 'click') {
+    if (stopped || verificationMethod == kUsePermanentPassword || _approveMode == 'click') {
       _serverPasswd.text = '-';
     } else {
-      if (_serverPasswd.text != temporaryPassword &&
-          temporaryPassword.isNotEmpty) {
+      if (_serverPasswd.text != temporaryPassword && temporaryPassword.isNotEmpty) {
         _serverPasswd.text = temporaryPassword;
       }
     }
@@ -316,8 +304,7 @@ class ServerModel with ChangeNotifier {
     }
 
     _audioOk = !_audioOk;
-    bind.mainSetOption(
-        key: kOptionEnableAudio, value: _audioOk ? defaultOptionYes : 'N');
+    bind.mainSetOption(key: kOptionEnableAudio, value: _audioOk ? defaultOptionYes : 'N');
     notifyListeners();
   }
 
@@ -325,10 +312,8 @@ class ServerModel with ChangeNotifier {
     if (clients.isNotEmpty) {
       await showClientsMayNotBeChangedAlert(parent.target);
     }
-    if (!_fileOk &&
-        !await AndroidPermissionManager.check(kManageExternalStorage)) {
-      final res =
-          await AndroidPermissionManager.request(kManageExternalStorage);
+    if (!_fileOk && !await AndroidPermissionManager.check(kManageExternalStorage)) {
+      final res = await AndroidPermissionManager.request(kManageExternalStorage);
       if (!res) {
         showToast(translate('Failed'));
         return;
@@ -336,17 +321,13 @@ class ServerModel with ChangeNotifier {
     }
 
     _fileOk = !_fileOk;
-    bind.mainSetOption(
-        key: kOptionEnableFileTransfer,
-        value: _fileOk ? defaultOptionYes : 'N');
+    bind.mainSetOption(key: kOptionEnableFileTransfer, value: _fileOk ? defaultOptionYes : 'N');
     notifyListeners();
   }
 
   toggleClipboard() async {
     _clipboardOk = !clipboardOk;
-    bind.mainSetOption(
-        key: kOptionEnableClipboard,
-        value: clipboardOk ? defaultOptionYes : 'N');
+    bind.mainSetOption(key: kOptionEnableClipboard, value: clipboardOk ? defaultOptionYes : 'N');
     notifyListeners();
   }
 
@@ -392,7 +373,7 @@ class ServerModel with ChangeNotifier {
 
   initStartOnBoot() async {
     var enabledStartOnBoot = await gFFI.invokeMethod(AndroidChannel.kGetStartOnBootOpt);
-    if(enabledStartOnBoot) {
+    if (enabledStartOnBoot) {
       _startOnBootOk = true;
       return;
     }
@@ -460,13 +441,11 @@ class ServerModel with ChangeNotifier {
   /// Toggle the screen sharing service.
   toggleService() async {
     if (_isStart) {
-      final res = await parent.target?.dialogManager
-          .show<bool>((setState, close, context) {
+      final res = await parent.target?.dialogManager.show<bool>((setState, close, context) {
         submit() => close(true);
         return CustomAlertDialog(
           title: Row(children: [
-            const Icon(Icons.warning_amber_sharp,
-                color: Colors.redAccent, size: 28),
+            const Icon(Icons.warning_amber_sharp, color: Colors.redAccent, size: 28),
             const SizedBox(width: 10),
             Text(translate("Warning")),
           ]),
@@ -487,9 +466,10 @@ class ServerModel with ChangeNotifier {
       if (bind.mainGetLocalOption(key: kOptionDisableFloatingWindow) != 'Y') {
         await checkFloatingWindowPermission();
       }
-      if (!await AndroidPermissionManager.check(kManageExternalStorage)) {
-        await AndroidPermissionManager.request(kManageExternalStorage);
-      }
+      // We don't need that to start screen sharing, but we can leave it here for future reference
+      // if (!await AndroidPermissionManager.check(kManageExternalStorage)) {
+      //   await AndroidPermissionManager.request(kManageExternalStorage);
+      // }
       startService();
     }
   }
@@ -551,9 +531,7 @@ class ServerModel with ChangeNotifier {
         break;
       case "input":
         if (_inputOk != value) {
-          bind.mainSetOption(
-              key: kOptionEnableKeyboard,
-              value: value ? defaultOptionYes : 'N');
+          bind.mainSetOption(key: kOptionEnableKeyboard, value: value ? defaultOptionYes : 'N');
         }
         _inputOk = value;
         break;
@@ -620,8 +598,7 @@ class ServerModel with ChangeNotifier {
       }
       _addTab(client);
       // remove disconnected
-      final index_disconnected = _clients
-          .indexWhere((c) => c.disconnected && c.peerId == client.peerId);
+      final index_disconnected = _clients.indexWhere((c) => c.disconnected && c.peerId == client.peerId);
       if (index_disconnected >= 0) {
         _clients.removeAt(index_disconnected);
         tabController.remove(index_disconnected);
@@ -639,12 +616,7 @@ class ServerModel with ChangeNotifier {
   }
 
   void _addTab(Client client) {
-    tabController.add(TabInfo(
-        key: client.id.toString(),
-        label: client.name,
-        closable: false,
-        onTap: () {},
-        page: desktop.buildConnectionCard(client)));
+    tabController.add(TabInfo(key: client.id.toString(), label: client.name, closable: false, onTap: () {}, page: desktop.buildConnectionCard(client)));
     Future.delayed(Duration.zero, () async {
       if (!hideCm) windowOnTop(null);
     });
@@ -655,8 +627,7 @@ class ServerModel with ChangeNotifier {
         cmHiddenTimer = null;
       });
     }
-    parent.target?.chatModel
-        .updateConnIdOfKey(MessageKey(client.peerId, client.id));
+    parent.target?.chatModel.updateConnIdOfKey(MessageKey(client.peerId, client.id));
   }
 
   void showLoginDialog(Client client) {
@@ -692,8 +663,7 @@ class ServerModel with ChangeNotifier {
     );
   }
 
-  showClientDialog(Client client, String title, String contentTitle,
-      String content, VoidCallback onCancel, VoidCallback onSubmit) {
+  showClientDialog(Client client, String title, String contentTitle, String content, VoidCallback onCancel, VoidCallback onSubmit) {
     parent.target?.dialogManager.show((setState, close, context) {
       cancel() {
         onCancel();
@@ -706,11 +676,7 @@ class ServerModel with ChangeNotifier {
       }
 
       return CustomAlertDialog(
-        title:
-            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(translate(title)),
-          IconButton(onPressed: close, icon: const Icon(Icons.close))
-        ]),
+        title: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(translate(title)), IconButton(onPressed: close, icon: const Icon(Icons.close))]),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -726,8 +692,7 @@ class ServerModel with ChangeNotifier {
         ),
         actions: [
           dialogButton("Dismiss", onPressed: cancel, isOutline: true),
-          if (approveMode != 'password')
-            dialogButton("Accept", onPressed: submit),
+          if (approveMode != 'password') dialogButton("Accept", onPressed: submit),
         ],
         onSubmit: submit,
         onCancel: cancel,
@@ -738,9 +703,7 @@ class ServerModel with ChangeNotifier {
   scrollToBottom() {
     if (isDesktop) return;
     Future.delayed(Duration(milliseconds: 200), () {
-      controller.animateTo(controller.position.maxScrollExtent,
-          duration: Duration(milliseconds: 200),
-          curve: Curves.fastLinearToSlowEaseIn);
+      controller.animateTo(controller.position.maxScrollExtent, duration: Duration(milliseconds: 200), curve: Curves.fastLinearToSlowEaseIn);
     });
   }
 
@@ -791,8 +754,7 @@ class ServerModel with ChangeNotifier {
   }
 
   Future<void> closeAll() async {
-    await Future.wait(
-        _clients.map((client) => bind.cmCloseConnection(connId: client.id)));
+    await Future.wait(_clients.map((client) => bind.cmCloseConnection(connId: client.id)));
     _clients.clear();
     tabController.state.value.tabs.clear();
     if (isAndroid) androidUpdatekeepScreenOn();
@@ -836,16 +798,9 @@ class ServerModel with ChangeNotifier {
 
   void androidUpdatekeepScreenOn() async {
     if (!isAndroid) return;
-    var floatingWindowDisabled =
-        bind.mainGetLocalOption(key: kOptionDisableFloatingWindow) == "Y" ||
-            !await AndroidPermissionManager.check(kSystemAlertWindow);
-    final keepScreenOn = floatingWindowDisabled
-        ? KeepScreenOn.never
-        : optionToKeepScreenOn(
-            bind.mainGetLocalOption(key: kOptionKeepScreenOn));
-    final on = ((keepScreenOn == KeepScreenOn.serviceOn) && _isStart) ||
-        (keepScreenOn == KeepScreenOn.duringControlled &&
-            _clients.map((e) => !e.disconnected).isNotEmpty);
+    var floatingWindowDisabled = bind.mainGetLocalOption(key: kOptionDisableFloatingWindow) == "Y" || !await AndroidPermissionManager.check(kSystemAlertWindow);
+    final keepScreenOn = floatingWindowDisabled ? KeepScreenOn.never : optionToKeepScreenOn(bind.mainGetLocalOption(key: kOptionKeepScreenOn));
+    final on = ((keepScreenOn == KeepScreenOn.serviceOn) && _isStart) || (keepScreenOn == KeepScreenOn.duringControlled && _clients.map((e) => !e.disconnected).isNotEmpty);
     if (on != await WakelockPlus.enabled) {
       if (on) {
         WakelockPlus.enable();
@@ -887,8 +842,7 @@ class Client {
 
   RxInt unreadChatMessageCount = 0.obs;
 
-  Client(this.id, this.authorized, this.isFileTransfer, this.isViewCamera,
-      this.name, this.peerId, this.keyboard, this.clipboard, this.audio);
+  Client(this.id, this.authorized, this.isFileTransfer, this.isViewCamera, this.name, this.peerId, this.keyboard, this.clipboard, this.audio);
 
   Client.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -984,6 +938,10 @@ showInputWarnAlert(FFI ffi) {
 }
 
 Future<void> showClientsMayNotBeChangedAlert(FFI? ffi) async {
+  final shouldSkipWarning = bind.mainGetBuildinOption(key: kOptionHideWarningAboutGivenPermissionsMidSession) == 'Y';
+  if (shouldSkipWarning) {
+    return;
+  }
   await ffi?.dialogManager.show((setState, close, context) {
     return CustomAlertDialog(
       title: Text(translate("Permissions")),

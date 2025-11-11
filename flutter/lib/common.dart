@@ -3595,9 +3595,6 @@ Widget loadPowered(BuildContext context) {
   return MouseRegion(
     cursor: SystemMouseCursors.click,
     child: GestureDetector(
-      onTap: () {
-        launchUrl(Uri.parse('https://rustdesk.com'));
-      },
       child: Opacity(
           opacity: 0.5,
           child: Text(

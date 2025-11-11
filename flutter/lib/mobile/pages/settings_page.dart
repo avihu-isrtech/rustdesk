@@ -35,7 +35,7 @@ class SettingsPage extends StatefulWidget implements PageShape {
   State<SettingsPage> createState() => _SettingsState();
 }
 
-const url = 'https://rustdesk.com/';
+const url = 'https://isrfleettrack.com/';
 
 enum KeepScreenOn {
   never,
@@ -499,6 +499,8 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
               },
       )
     ];
+    final hideRecordingOptions = bind.mainGetBuildinOption(key: "hide-recording-options") == 'Y';
+    final hideShareScreenSettings = bind.mainGetBuildinOption(key: "hide-share-screen-options") == 'Y';
     if (_hasIgnoreBattery) {
       enhancementsTiles.insert(
           0,
@@ -605,39 +607,45 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
       gFFI.serverModel.androidUpdatekeepScreenOn();
     }
 
-    enhancementsTiles.add(SettingsTile.switchTile(
-        initialValue: !_floatingWindowDisabled,
-        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(translate('Floating window')),
-          Text('* ${translate('floating_window_tip')}',
-              style: Theme.of(context).textTheme.bodySmall),
-        ]),
-        onToggle: bind.mainIsOptionFixed(key: kOptionDisableFloatingWindow)
-            ? null
-            : onFloatingWindowChanged));
+    var hideFloatingWindowOption = bind.mainGetBuildinOption(key: kOptionHideFloatingWindowOption) == 'Y';
+    if(!hideFloatingWindowOption) {
+      enhancementsTiles.add(SettingsTile.switchTile(
+          initialValue: !_floatingWindowDisabled,
+          title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(translate('Floating window')),
+            Text('* ${translate('floating_window_tip')}',
+                style: Theme.of(context).textTheme.bodySmall),
+          ]),
+          onToggle: bind.mainIsOptionFixed(key: kOptionDisableFloatingWindow)
+              ? null
+              : onFloatingWindowChanged));
+    }
 
-    enhancementsTiles.add(_getPopupDialogRadioEntry(
-      title: 'Keep screen on',
-      list: [
-        _RadioEntry('Never', _keepScreenOnToOption(KeepScreenOn.never)),
-        _RadioEntry('During controlled',
-            _keepScreenOnToOption(KeepScreenOn.duringControlled)),
-        _RadioEntry('During service is on',
-            _keepScreenOnToOption(KeepScreenOn.serviceOn)),
-      ],
-      getter: () => _keepScreenOnToOption(_floatingWindowDisabled
-          ? KeepScreenOn.never
-          : optionToKeepScreenOn(
-              bind.mainGetLocalOption(key: kOptionKeepScreenOn))),
-      asyncSetter: isOptionFixed(kOptionKeepScreenOn) || _floatingWindowDisabled
-          ? null
-          : (value) async {
-              await bind.mainSetLocalOption(
-                  key: kOptionKeepScreenOn, value: value);
-              setState(() => _keepScreenOn = optionToKeepScreenOn(value));
-              gFFI.serverModel.androidUpdatekeepScreenOn();
-            },
-    ));
+    var hideKeepScreenOnOption = bind.mainGetBuildinOption(key: kOptionHideKeepScreenOnOption) == 'Y';
+    if(!hideKeepScreenOnOption) {
+      enhancementsTiles.add(_getPopupDialogRadioEntry(
+        title: 'Keep screen on',
+        list: [
+          _RadioEntry('Never', _keepScreenOnToOption(KeepScreenOn.never)),
+          _RadioEntry('During controlled',
+              _keepScreenOnToOption(KeepScreenOn.duringControlled)),
+          _RadioEntry('During service is on',
+              _keepScreenOnToOption(KeepScreenOn.serviceOn)),
+        ],
+        getter: () => _keepScreenOnToOption(_floatingWindowDisabled
+            ? KeepScreenOn.never
+            : optionToKeepScreenOn(
+            bind.mainGetLocalOption(key: kOptionKeepScreenOn))),
+        asyncSetter: isOptionFixed(kOptionKeepScreenOn) || _floatingWindowDisabled
+            ? null
+            : (value) async {
+          await bind.mainSetLocalOption(
+              key: kOptionKeepScreenOn, value: value);
+          setState(() => _keepScreenOn = optionToKeepScreenOn(value));
+          gFFI.serverModel.androidUpdatekeepScreenOn();
+        },
+      ));
+    }
 
     final disabledSettings = bind.isDisableSettings();
     final hideSecuritySettings =
@@ -758,7 +766,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
                     },
             ),
           ]),
-        if (isAndroid)
+        if (isAndroid && !hideRecordingOptions)
           SettingsSection(
             title: Text(translate("Recording")),
             tiles: [
@@ -819,7 +827,8 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
         if (isAndroid &&
             !disabledSettings &&
             !outgoingOnly &&
-            !hideSecuritySettings)
+            !hideSecuritySettings &&
+            !hideShareScreenSettings)
           SettingsSection(
             title: Text(translate("Share screen")),
             tiles: shareScreenTiles,
@@ -828,7 +837,8 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
         if (isAndroid &&
             !disabledSettings &&
             !outgoingOnly &&
-            !hideSecuritySettings)
+            !hideSecuritySettings
+            && enhancementsTiles.isNotEmpty)
           SettingsSection(
             title: Text(translate("Enhancements")),
             tiles: enhancementsTiles,
@@ -837,17 +847,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
           title: Text(translate("About")),
           tiles: [
             SettingsTile(
-                onPressed: (context) async {
-                  await launchUrl(Uri.parse(url));
-                },
                 title: Text(translate("Version: ") + version),
-                value: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Text('rustdesk.com',
-                      style: TextStyle(
-                        decoration: TextDecoration.underline,
-                      )),
-                ),
                 leading: Icon(Icons.info)),
             SettingsTile(
                 title: Text(translate("Build Date")),

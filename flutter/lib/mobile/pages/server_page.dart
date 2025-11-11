@@ -546,7 +546,16 @@ class _PermissionCheckerState extends State<PermissionChecker> {
   Widget build(BuildContext context) {
     final serverModel = Provider.of<ServerModel>(context);
     final hasAudioPermission = androidVersion >= 30;
-    var showStartOnBootOption = bind.mainGetBuildinOption(key: kOptionShowStartOnBootOption) == 'server_page';
+    final showStartOnBootOption = bind.mainGetBuildinOption(key: kOptionShowStartOnBootOption) == 'server_page';
+    final disallowTurningOffStartedService = bind.mainGetBuildinOption(key: kOptionDisallowTurningOffStartedService) == 'Y';
+    void handleStopServiceClicked() {
+      if (disallowTurningOffStartedService) {
+        return;
+      } else {
+        serverModel.toggleService();
+      }
+    }
+
     return PaddingCard(
         title: translate("Permissions"),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -554,7 +563,7 @@ class _PermissionCheckerState extends State<PermissionChecker> {
               ? ElevatedButton.icon(
                       style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.red)),
                       icon: const Icon(Icons.stop),
-                      onPressed: serverModel.toggleService,
+                      onPressed: handleStopServiceClicked,
                       label: Text(translate("Stop service")))
                   .marginOnly(bottom: 8)
               : SizedBox.shrink(),
