@@ -12,7 +12,7 @@
   },
   "override-settings": {
     "peer-id": "555555555", // a predefined peer ID - can be an empty string, null or removed if we want to auto generate
-    "auto-peer-id-mode": "uuid", // numeric/uuid (default is numeric)
+    "auto-peer-id-mode": "based-on-uuid", // numeric - only numbers / uuid - completely random string / based-on-uuid - calculate it based on the uuid of the device (default is numeric)
     "fixed-uuid": "some_random_uuid_value", // this is the unique identifier of the device - to let the app pick its own device id leave it null, empty or remove it
     "floating-window-untouchable": "Y",
     "floating-window-size": "32", // in pixels (its square shape)

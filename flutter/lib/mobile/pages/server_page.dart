@@ -474,7 +474,7 @@ class ServerInfo extends StatelessWidget {
     }
 
     final showOneTime = serverModel.approveMode != 'click' && serverModel.verificationMethod != kUsePermanentPassword;
-    final showIdValueInSmall = model.serverId.value.text.length > 16;
+    final showIdValueInSmall = model.serverId.value.text.length >= 20;
     return PaddingCard(
         title: translate('Your Device'),
         child: Column(
