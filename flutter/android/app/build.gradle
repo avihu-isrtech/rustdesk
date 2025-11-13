@@ -46,7 +46,7 @@ protobuf {
 }
 
 android {
-    namespace "com.carriez.flutter_hbb"
+    namespace "com.isrtech.isr.remote"
     compileSdkVersion 34
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -66,7 +66,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.carriez.flutter_hbb"
+        applicationId "com.isrtech.isr.remote"
         minSdkVersion 21
         targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()

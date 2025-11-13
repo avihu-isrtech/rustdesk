@@ -1,4 +1,4 @@
-package com.carriez.flutter_hbb
+package com.isrtech.isr.remote
 
 import android.app.Application
 import android.util.Log

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-package="com.carriez.flutter_hbb"
+package="com.isrtech.isr.remote"
 adb shell appops set $package PROJECT_MEDIA allow
 adb shell appops set $package POST_NOTIFICATION allow
 adb shell pm grant $package android.permission.POST_NOTIFICATIONS
