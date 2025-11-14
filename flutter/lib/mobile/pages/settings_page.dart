@@ -500,6 +500,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
       )
     ];
     final hideRecordingOptions = bind.mainGetBuildinOption(key: "hide-recording-options") == 'Y';
+    final hideHardwareCodecOptions = bind.mainGetBuildinOption(key: "hide-hardware-codec-options") == 'Y';
     final hideShareScreenSettings = bind.mainGetBuildinOption(key: "hide-share-screen-options") == 'Y';
     if (_hasIgnoreBattery) {
       enhancementsTiles.insert(
@@ -749,7 +750,7 @@ class _SettingsState extends State<SettingsPage> with WidgetsBindingObserver {
             },
           )
         ]),
-        if (isAndroid)
+        if (isAndroid && !hideHardwareCodecOptions)
           SettingsSection(title: Text(translate('Hardware Codec')), tiles: [
             SettingsTile.switchTile(
               title: Text(translate('Enable hardware codec')),

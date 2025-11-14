@@ -573,6 +573,7 @@ class _PermissionCheckerState extends State<PermissionChecker> {
               !serverModel.mediaOk && gFFI.userModel.userName.value.isEmpty && bind.mainGetLocalOption(key: "show-scam-warning") != "N"
                   ? () => showScamWarning(context, serverModel)
                   : serverModel.toggleService),
+          PermissionRow(translate("Allow Notifications"), serverModel.notificationsOk, serverModel.turnOnNotificationsFromUi),
           PermissionRow(translate("Input Control"), serverModel.inputOk, serverModel.toggleInput),
           PermissionRow(translate("Transfer file"), serverModel.fileOk, serverModel.toggleFile),
           hasAudioPermission
@@ -602,7 +603,7 @@ class PermissionRow extends StatelessWidget {
   Widget build(BuildContext context) {
     var disallow = bind.mainGetBuildinOption(key: kOptionDisallowTurningOffGivenPermissions) == 'Y';
 
-    void handleChange(bool value) {
+    void handleChange(bool? value) {
       if (disallow && isOk) {
         return;
       } else {
@@ -610,7 +611,14 @@ class PermissionRow extends StatelessWidget {
       }
     }
 
-    return SwitchListTile(visualDensity: VisualDensity.compact, contentPadding: EdgeInsets.all(0), title: Text(name), value: isOk, onChanged: handleChange);
+    return CheckboxListTile(
+      visualDensity: VisualDensity.compact,
+      contentPadding: EdgeInsets.all(0),
+      title: Text(name),
+      value: isOk,
+      onChanged: handleChange,
+      controlAffinity: ListTileControlAffinity.trailing
+    );
   }
 }
 
@@ -863,5 +871,10 @@ void androidChannelInit() {
 }
 
 void showScamWarning(BuildContext context, ServerModel serverModel) {
-  serverModel.toggleService();
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return ScamWarningDialog(serverModel: serverModel);
+    },
+  );
 }

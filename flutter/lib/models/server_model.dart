@@ -28,6 +28,7 @@ class ServerModel with ChangeNotifier {
   bool _isStart = false; // Android MainService status
   bool _mediaOk = false;
   bool _inputOk = false;
+  bool _notificationsOk = false;
   bool _audioOk = false;
   bool _fileOk = false;
   bool _clipboardOk = false;
@@ -56,6 +57,8 @@ class ServerModel with ChangeNotifier {
   bool get mediaOk => _mediaOk;
 
   bool get inputOk => _inputOk;
+
+  bool get notificationsOk => _notificationsOk;
 
   bool get audioOk => _audioOk;
 
@@ -191,10 +194,6 @@ class ServerModel with ChangeNotifier {
     }
   }
 
-  /// 1. check android permission
-  /// 2. check config
-  /// audio true by default (if permission on) (false default < Android 10)
-  /// file true by default (if permission on)
   checkAndroidPermission() async {
     // audio
     if (androidVersion < 30 || !await AndroidPermissionManager.check(kRecordAudio)) {
@@ -220,6 +219,9 @@ class ServerModel with ChangeNotifier {
     // clipboard
     final clipOption = await bind.mainGetOption(key: kOptionEnableClipboard);
     _clipboardOk = clipOption != 'N';
+
+    // notifications
+    _notificationsOk = await doesNotificationPermissionIsGranted();
 
     // start on boot
     initStartOnBoot();
@@ -410,7 +412,23 @@ class ServerModel with ChangeNotifier {
     }
   }
 
-  Future<bool> checkRequestNotificationPermission() async {
+  turnOnNotificationsFromUi() async {
+    if(await makeSureNotificationsPermissionGranted() == true) {
+      _notificationsOk = true;
+    }
+  }
+
+  Future<bool> makeSureNotificationsPermissionGranted() async {
+    if(await doesNotificationPermissionIsGranted()) {
+      return true;
+    }
+
+    var res = await AndroidPermissionManager.request(kAndroid13Notification);
+    debugPrint("notification permission request result: $res");
+    return res;
+  }
+
+  Future<bool> doesNotificationPermissionIsGranted() async {
     debugPrint("androidVersion $androidVersion");
     if (androidVersion < 33) {
       return true;
@@ -419,9 +437,8 @@ class ServerModel with ChangeNotifier {
       debugPrint("notification permission already granted");
       return true;
     }
-    var res = await AndroidPermissionManager.request(kAndroid13Notification);
-    debugPrint("notification permission request result: $res");
-    return res;
+
+    return false;
   }
 
   Future<bool> checkFloatingWindowPermission() async {
@@ -462,11 +479,12 @@ class ServerModel with ChangeNotifier {
         stopService();
       }
     } else {
-      await checkRequestNotificationPermission();
+      await makeSureNotificationsPermissionGranted();
       if (bind.mainGetLocalOption(key: kOptionDisableFloatingWindow) != 'Y') {
         await checkFloatingWindowPermission();
       }
-      // We don't need that to start screen sharing, but we can leave it here for future reference
+
+      // This permission is not MUST to have in order to start screen sharing, but we can leave it here for future references
       // if (!await AndroidPermissionManager.check(kManageExternalStorage)) {
       //   await AndroidPermissionManager.request(kManageExternalStorage);
       // }
